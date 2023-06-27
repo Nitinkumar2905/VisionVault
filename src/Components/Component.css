@@ -1,0 +1,16 @@
+.no-outline:focus{
+    outline:none;
+}
+
+input{
+    font-size: 20px;
+}
+input::placeholder{
+    font-size: 20px;
+}
+
+.search-bar-margin{
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
