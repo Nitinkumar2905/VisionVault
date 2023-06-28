@@ -1,6 +1,49 @@
-import React from "react";
+import React, { useState } from "react";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = (props) => {
+  const navigate = useNavigate();
+  const host = "http://localhost:8000";
+  const [credentials, setCredentials] = useState({
+    name: "",
+    email: "",
+    password: "",
+    cpassword: "",
+  });
+  const onChange = (e) => {
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
+  };
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    const { name, email, password, cpassword } = credentials;
+    if (credentials.password === credentials.cpassword) {
+      const response = await fetch(`${host}/api/auth/createUser`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          cpassword,
+        }),
+      });
+      const json = await response.json();
+
+      if (json.success) {
+        localStorage.setItem("token", json.authToken);
+        navigate("/home");
+        props.showAlert("Account created successfully", "success");
+      } else {
+        props.showAlert("User already exists with this email", "danger");
+      }
+    } else {
+      props.showAlert("Password must be same", "warning")
+    }
+  };
+
   return (
     <>
       <div className={``} style={{ fontFamily: "sans-serif" }}>
@@ -13,7 +56,7 @@ const SignUp = (props) => {
             New to VisionVault ? SignUp Now
           </h2>
           <form
-            // onSubmit={handleLogin}
+            onSubmit={handleSignUp}
             className={`mt-3 container`}
             style={{ maxWidth: "40vw" }}
           >
@@ -29,11 +72,14 @@ const SignUp = (props) => {
               </label>
               <input
                 type="text"
-                className={`form-control text-${
+                className={`input-outline-none form-control text-${
                   props.mode === "Light" ? "dark" : "light"
                 } border border-${props.mode === "Light" ? "dark" : "white"}`}
                 id="name"
                 name="name"
+                required
+                onChange={onChange}
+                value={credentials.name}
                 style={{
                   backgroundColor: "inherit",
                 }}
@@ -56,6 +102,9 @@ const SignUp = (props) => {
                 } border border-${props.mode === "Light" ? "dark" : "white"}`}
                 id="email"
                 name="email"
+                required
+                onChange={onChange}
+                value={credentials.email}
                 aria-describedby="emailHelp"
                 style={{
                   backgroundColor: "inherit",
@@ -79,6 +128,9 @@ const SignUp = (props) => {
                 } border border-${props.mode === "Light" ? "dark" : "white"}`}
                 id="password"
                 name="password"
+                onChange={onChange}
+                required
+                value={credentials.password}
                 style={{
                   backgroundColor: "inherit",
                 }}
@@ -101,6 +153,9 @@ const SignUp = (props) => {
                 } border border-${props.mode === "Light" ? "dark" : "white"}`}
                 id="cpassword"
                 name="cpassword"
+                onChange={onChange}
+                required
+                value={credentials.cpassword}
                 style={{
                   backgroundColor: "inherit",
                 }}
@@ -115,7 +170,7 @@ const SignUp = (props) => {
             >
               We'll never share your credentials with anyone else.
             </div>
-            <div className="mb-3 form-check">
+            {/* <div className="mb-3 form-check">
               <input
                 type="checkbox"
                 className="form-check-input"
@@ -129,11 +184,9 @@ const SignUp = (props) => {
               >
                 Check me out
               </label>
-            </div>
+            </div> */}
 
-            <button type="submit" className="btn btn-primary">
-              Submit
-            </button>
+            <button className="btn btn-primary">SignUp</button>
           </form>
         </div>
       </div>
