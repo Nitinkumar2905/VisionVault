@@ -1,12 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = (props) => {
+  const host = "http://localhost:8000";
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
   const navigate = useNavigate();
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    navigate("/home");
-    // console.log(navigate)
+    const response = await fetch(`${host}/api/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "applicatin/json",
+      },
+      body: JSON.stringify({
+        email: credentials.email,
+        password: credentials.password,
+      }),
+    });
+    const json = await response.json();
+    if (json.success) {
+      localStorage.setItem("token", json.authToken);
+      navigate("/home");
+      props.showAlert("logged in successfully", "success");
+    } else {
+      props.showAlert("Invalid credentials", "danger");
+    }
+  };
+  const onChange = (e) => {
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
   return (
     <>
@@ -38,10 +59,14 @@ const Login = (props) => {
                 type="email"
                 className={`form-control text-${
                   props.mode === "Light" ? "dark" : "light"
-                } border-bottom email-tag border-${props.mode === "Light" ? "dark" : "white"}`}
+                } border-bottom email-tag border-${
+                  props.mode === "Light" ? "dark" : "white"
+                }`}
                 id="email"
                 name="email"
                 aria-describedby="emailHelp"
+                value={credentials.email}
+                onChange={onChange}
                 style={{
                   backgroundColor: "inherit",
                 }}
@@ -73,6 +98,8 @@ const Login = (props) => {
                 } border border-${props.mode === "Light" ? "dark" : "white"}`}
                 id="password"
                 name="password"
+                onChange={onChange}
+                value={credentials.password}
                 style={{
                   backgroundColor: "inherit",
                 }}
