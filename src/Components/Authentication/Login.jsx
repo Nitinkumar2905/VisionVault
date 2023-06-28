@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const Login = (props) => {
   const host = "http://localhost:8000";
+  const token = localStorage.getItem("token")
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const navigate = useNavigate();
   const handleLogin = async (e) => {
@@ -10,7 +11,8 @@ const Login = (props) => {
     const response = await fetch(`${host}/api/auth/login`, {
       method: "POST",
       headers: {
-        "Content-Type": "applicatin/json",
+        "Content-Type": "application/json",
+        "auth-token": token
       },
       body: JSON.stringify({
         email: credentials.email,
@@ -21,7 +23,7 @@ const Login = (props) => {
     if (json.success) {
       localStorage.setItem("token", json.authToken);
       navigate("/home");
-      props.showAlert("logged in successfully", "success");
+      props.showAlert("Logged in successfully", "success");
     } else {
       props.showAlert("Invalid credentials", "danger");
     }
@@ -105,7 +107,7 @@ const Login = (props) => {
                 }}
               />
             </div>
-            <div className="mb-3 form-check">
+            {/* <div className="mb-3 form-check">
               <input
                 type="checkbox"
                 className="form-check-input"
@@ -119,7 +121,7 @@ const Login = (props) => {
               >
                 Check me out
               </label>
-            </div>
+            </div> */}
             <button type="submit" className="btn btn-primary">
               Submit
             </button>
