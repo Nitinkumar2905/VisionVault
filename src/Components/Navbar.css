@@ -1,0 +1,5 @@
+.dropdown-menu.show {
+  display: block;
+  margin-left: -142px;
+  margin-top: 15px;
+}
