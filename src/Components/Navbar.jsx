@@ -1,8 +1,13 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Navbar = (props) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
   return (
     <>
       <div className="" style={{ fontFamily: "sans-serif" }}>
@@ -44,7 +49,11 @@ const Navbar = (props) => {
                   <Link
                     className={`nav-link text-${
                       props.mode === "Light" ? "dark" : "white"
-                    } ${location.pathname === "/home" ? "text-decoration-underline" : "text-decoration-none"} link-underline-primary link-offset-2`}
+                    } ${
+                      location.pathname === "/home"
+                        ? "text-decoration-underline"
+                        : "text-decoration-none"
+                    } link-underline-primary link-offset-2`}
                     aria-current="page"
                     to="/home"
                   >
@@ -55,7 +64,11 @@ const Navbar = (props) => {
                   <Link
                     className={`nav-link text-${
                       props.mode === "Light" ? "dark" : "white"
-                    } ${location.pathname === "/about" ? "text-decoration-underline" : "text-decoration-none"} link-underline-primary link-offset-2`}
+                    } ${
+                      location.pathname === "/about"
+                        ? "text-decoration-underline"
+                        : "text-decoration-none"
+                    } link-underline-primary link-offset-2`}
                     to="/about"
                   >
                     About
@@ -73,9 +86,9 @@ const Navbar = (props) => {
                   Search
                 </button>
               </form> */}
-              <div className="form-check form-switch mx-2">
+              <div className="d-flex align-items-center form-check form-switch mx-2">
                 <input
-                  className="form-check-input"
+                  className="form-check-input mx-1"
                   type="checkbox"
                   role="switch"
                   id="flexSwitchCheckDefault"
@@ -83,16 +96,31 @@ const Navbar = (props) => {
                   style={{ cursor: "pointer" }}
                 />
                 <label
-                  className="form-check-label"
+                  className="form-check-label mt-1"
                   htmlFor="flexSwitchCheckDefault"
                 >
                   Dark Mode
                 </label>
               </div>
-              <div className="ms-1">
-                <Link to="/login" className="btn btn-primary me-1">Login</Link>
-                <Link to="signUp" className="btn btn-primary ms-1">SignUp</Link>
-              </div>
+              {!localStorage.getItem("token") ? (
+                <div className="ms-1">
+                  <Link to="/login" className="btn btn-primary me-1">
+                    Login
+                  </Link>
+                  <Link to="signUp" className="btn btn-primary ms-1">
+                    SignUp
+                  </Link>
+                </div>
+              ) : (
+                <div>
+                  <button
+                    onClick={handleLogout}
+                    className="btn btn-primary mx-1"
+                  >
+                    LogOut
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </nav>
