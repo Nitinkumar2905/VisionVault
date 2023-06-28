@@ -1,85 +1,43 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import "./Navbar.css";
 
 const Navbar = (props) => {
   const location = useLocation();
-  const ref = useRef();
-  const refClose = useRef();
-  const [isLoading, setIsloading] = useState(false);
+  const [user, setUser] = useState({ name: "", email: "" });
   const navigate = useNavigate();
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
   };
 
-  // const [isloading, setIsloading] = useState(false);
   const host = "http://localhost:8000";
   useEffect(() => {
     handleUserDetails();
     // eslint-disable-next-line
   }, []);
 
-  const [user, setUser] = useState({ name: "", email: "" });
   const handleUserDetails = async () => {
-    try {
+    if (localStorage.getItem("token")) {
       const response = await fetch(`${host}/api/auth/getUser`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application",
           "auth-token": localStorage.getItem("token"),
         },
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch user details");
-      } else {
+      if (response.ok) {
         const json = await response.json();
-        // setIsloading(true);
         setUser({
           name: json.user.name,
           email: json.user.email,
           userId: json.user._id,
         });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const deleteUser = async (e) => {
-    ref.current.click();
-  };
-
-  const deleteUserConfirm = async (e) => {
-    refClose.current.click();
-    console.log("deleted");
-    const response = await fetch(`${host}/api/auth/deleteUser/${user.userId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": localStorage.getItem("token"),
-      },
-    });
-
-    if (response.status === 404) {
-      // Handle user not found error
-      alert("User not found");
-      return;
-    }
-    setIsloading(true);
-
-    try {
-      const json = await response.json();
-      if (response.ok) {
-        localStorage.removeItem("token");
-        navigate("/signUp");
       } else {
-        alert("Cannot process this request right now");
-        console.log(json);
+        throw new Error("Failed to fetch user details");
       }
-    } catch (error) {
-      console.log(error);
-      alert("Error occurred while processing the request");
     }
   };
 
@@ -150,17 +108,7 @@ const Navbar = (props) => {
                   </Link>
                 </li>
               </ul>
-              {/* <form className="d-flex mx-2" role="search">
-                <input
-                  className="form-control me-2"
-                  type="search"
-                  placeholder="Search"
-                  aria-label="Search"
-                />
-                <button className="btn btn-outline-success" type="submit">
-                  Search
-                </button>
-              </form> */}
+
               <div className="d-flex align-items-center form-check form-switch mx-2">
                 <input
                   className="form-check-input mx-1"
@@ -189,32 +137,37 @@ const Navbar = (props) => {
               ) : (
                 <div className={`d-flex flex-row`}>
                   <div className="dropdown">
-                    <button
+                    <div
                       onClick={handleUserDetails}
-                      className="btn btn-primary dropdown-toggle me-1"
+                      className="btn btn-outline-primary dropdown-toggle me-2"
                       type="button"
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
                     >
-                      User Info...
-                    </button>
+                      <i className="fa-regular fa-user"></i>
+                    </div>
                     <ul
-                      className={`px-3 my-3 dropdown-menu dropdown-menu-${
+                      className={`dropdown-menu dropdown-menu-${
                         props.mode === "Light" ? "light" : "dark"
                       }`}
                     >
                       {localStorage.getItem("token") && (
                         <div
                           style={{}}
-                          className={`p-2 text-primary`}
+                          className={`px-3 pt-2 text-${
+                            props.mode === "Light" ? "primary" : "white"
+                          }`}
                         >
                           {user.email}
+                          <hr className="dropdown divider"></hr>
                         </div>
                       )}
                       <li>
                         <Link
                           className={`dropdown-item ${
-                            location.pathname === "/profile" ? "active" : ""
+                            location.pathname === "/profile"
+                              ? "text-primary"
+                              : ""
                           }`}
                           to="/profile"
                         >
@@ -224,7 +177,9 @@ const Navbar = (props) => {
                       <li>
                         <Link
                           className={`dropdown-item ${
-                            location.pathname === "/collection" ? "active" : ""
+                            location.pathname === "/collection"
+                              ? "text-primary"
+                              : ""
                           }`}
                           to="/collection"
                         >
@@ -234,7 +189,9 @@ const Navbar = (props) => {
                       <li>
                         <Link
                           className={`dropdown-item ${
-                            location.pathname === "/settings" ? "active" : ""
+                            location.pathname === "/settings"
+                              ? "text-primary"
+                              : ""
                           }`}
                           to="/settings"
                         >
@@ -247,86 +204,26 @@ const Navbar = (props) => {
                       <li>
                         <Link
                           className={`dropdown-item ${
-                            location.pathname === "/help-center" ? "active" : ""
+                            location.pathname === "/help-center"
+                              ? "text-primary"
+                              : ""
                           }`}
                           to="/help-center"
                         >
                           Help Centre
                         </Link>
                       </li>
-                      <hr className="dropdown-divider"></hr>
                       <button
+                        onClick={handleLogout}
+                        className="btn btn-outline-primary  my-2 mx-3"
                         style={{ fontSize: "14px" }}
-                        onClick={deleteUser}
-                        className={`ms-3 mt-2 btn btn-${
-                          props.mode === "Dark" ? "primary" : "dark"
-                        } bg-${props.mode === "Dark" ? "black" : "primary"}`}
                       >
-                        Delete Account
+                        LogOut
                       </button>
                     </ul>
                   </div>
-                  <button
-                    onClick={handleLogout}
-                    className="btn btn-primary mx-1"
-                  >
-                    LogOut
-                  </button>
                 </div>
               )}
-              <button
-                type="button"
-                className="btn btn-primary d-none"
-                data-bs-toggle="modal"
-                ref={ref}
-                data-bs-target="#exampleModal"
-              >
-                Launch demo modal
-              </button>
-
-              <div
-                className="modal fade"
-                id="exampleModal"
-                tabIndex="-1"
-                aria-labelledby="exampleModalLabel"
-                aria-hidden="true"
-              >
-                <div className="modal-dialog">
-                  <div className="modal-content">
-                    <div className={`modal-header`}>
-                      <h1 className={`text-dark modal-title fs-5`} id="exampleModalLabel">
-                        Account deletion confirmation
-                      </h1>
-                      <button
-                        type="button"
-                        className="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      ></button>
-                    </div>
-                    <div className={`text-dark modal-body`}>
-                      Do you really want to delete the account ?{" "}
-                    </div>
-                    <div className="modal-footer">
-                      <button
-                        ref={refClose}
-                        type="button"
-                        className="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                      >
-                        No
-                      </button>
-                      <button
-                        onClick={deleteUserConfirm}
-                        type="button"
-                        className="btn btn-primary"
-                      >
-                        Yes, Delete it.
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </nav>
