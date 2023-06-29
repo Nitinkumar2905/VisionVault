@@ -1,11 +1,12 @@
 import React from "react";
 import "./Component.css";
-import Category from "./Category";
+
+
 const Home = (props) => {
   return (
     <>
       <div
-        className={`m-3 text-center fs-3 text-${
+        className={`text-center fs-3 text-${
           props.mode === "Light" ? "dark" : "white"
         }`}
         style={{ fontFamily: "sans-serif"}}
@@ -40,7 +41,8 @@ const Home = (props) => {
           </form>
         </div>
       </div>
-      <Category mode={props.mode}/>
+      <div className="m-3">
+      </div>
     </>
   );
 };

@@ -9,6 +9,7 @@ const Navbar = (props) => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    props.showAlert("Logged out successfully", "success")
     navigate("/login");
   };
 
@@ -151,7 +152,7 @@ const Navbar = (props) => {
                         props.mode === "Light" ? "light" : "dark"
                       }`}
                     >
-                      {localStorage.getItem("token") && (
+                      {localStorage.getItem("token")?(
                         <div
                           style={{}}
                           className={`px-3 pt-2 text-${
@@ -161,7 +162,7 @@ const Navbar = (props) => {
                           {user.email}
                           <hr className="dropdown divider"></hr>
                         </div>
-                      )}
+                      ):<span className={`text-primary px-3 pt-2`}>Loading....</span>}
                       <li>
                         <Link
                           className={`dropdown-item ${
@@ -208,7 +209,7 @@ const Navbar = (props) => {
                               ? "text-primary"
                               : ""
                           }`}
-                          to="/help-center"
+                          to="/helpCenter"
                         >
                           Help Centre
                         </Link>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import './style.css'
 
 const SignUp = (props) => {
   const navigate = useNavigate();

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import './style.css'
 
 const Login = (props) => {
   const host = "http://localhost:8000";
